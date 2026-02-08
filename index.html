@@ -134,6 +134,11 @@
             display: grid;
             grid-template-columns: 1fr 1px 1fr 1px 1fr;
             align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        .projections-wrapper.single-view {
+            grid-template-columns: 1fr;
         }
 
         .divider {
@@ -145,6 +150,11 @@
         .projection-item {
             text-align: center;
             padding: 0 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .hidden {
+            display: none;
         }
 
         .proj-label {
@@ -213,7 +223,7 @@
         </div>
 
         <div class="card box-input" style="animation-delay: 0.2s">
-            <div class="card-label">Uso Diario (Horas)</div>
+            <div class="card-label">Uso (Horas)</div>
             <input type="number" id="timeInput" placeholder="0" oninput="calc()">
             <div class="toggle-container">
                 <div class="pill-btn" onclick="quickTime(1)">1h</div>
@@ -224,45 +234,37 @@
 
         <div class="card box-input" style="animation-delay: 0.3s">
             <div class="card-label">Precio (€/kWh)</div>
-            <input
-    type="number"
-    id="priceInput"
-    value="0.15"
-    placeholder="0.15"
-    step="0.01"
-    min="0"
-    oninput="calc()"
->
+            <input type="number" id="priceInput" value="0.15" placeholder="0.15" step="0.01" min="0" oninput="calc()">
         </div>
 
-        <div class="projections-wrapper">
-            <div class="projection-item">
+        <div class="projections-wrapper" id="resultsWrapper">
+            <div class="projection-item multi-only">
                 <div class="proj-label">Costo Diario</div>
                 <div class="proj-value"><span class="currency">€</span><span id="costDaily">0.00</span></div>
                 <div class="proj-sub">1 Día</div>
             </div>
 
-            <div class="divider"></div>
+            <div class="divider multi-only"></div>
 
-            <div class="projection-item">
+            <div class="projection-item multi-only">
                 <div class="proj-label">Mensual</div>
                 <div class="proj-value"><span class="currency">€</span><span id="costMonthly">0.00</span></div>
                 <div class="proj-sub">30 Días</div>
             </div>
 
-            <div class="divider"></div>
+            <div class="divider multi-only"></div>
 
-            <div class="projection-item">
-                <div class="proj-label">Anual</div>
-                <div class="proj-value"><span class="currency">€</span><span id="costYearly">0.00</span></div>
-                <div class="proj-sub">365 Días</div>
+            <div class="projection-item" id="mainProjection">
+                <div class="proj-label" id="finalLabel">Anual</div>
+                <div class="proj-value"><span class="currency">€</span><span id="costFinal">0.00</span></div>
+                <div class="proj-sub" id="finalSub">365 Días</div>
             </div>
         </div>
     </div>
 
     <script>
         let unit = 'W';
-        let state = { d: 0, m: 0, y: 0 };
+        let state = { d: 0, m: 0, f: 0 };
 
         function setUnit(u) {
             unit = u;
@@ -303,16 +305,39 @@
             const c = parseFloat(document.getElementById('priceInput').value) || 0;
 
             const kw = unit === 'W' ? (p / 1000) : p;
+            const wrapper = document.getElementById('resultsWrapper');
+            const multiElements = document.querySelectorAll('.multi-only');
             
-            const daily = kw * t * c;
-            const monthly = daily * 30;
-            const yearly = daily * 365;
+            let finalValue = 0;
 
-            animate('costDaily', state.d, daily);
-            animate('costMonthly', state.m, monthly);
-            animate('costYearly', state.y, yearly);
+            if (t > 24) {
+                wrapper.classList.add('single-view');
+                multiElements.forEach(el => el.classList.add('hidden'));
+                
+                document.getElementById('finalLabel').textContent = "Costo Total";
+                document.getElementById('finalSub').textContent = `Basado en ${t} horas`;
+                
+                finalValue = kw * t * c;
+                animate('costFinal', state.f, finalValue);
+                state.f = finalValue;
 
-            state = { d: daily, m: monthly, y: yearly };
+            } else {
+                wrapper.classList.remove('single-view');
+                multiElements.forEach(el => el.classList.remove('hidden'));
+                
+                document.getElementById('finalLabel').textContent = "Anual";
+                document.getElementById('finalSub').textContent = "365 Días";
+
+                const daily = kw * t * c;
+                const monthly = daily * 30;
+                finalValue = daily * 365;
+
+                animate('costDaily', state.d, daily);
+                animate('costMonthly', state.m, monthly);
+                animate('costFinal', state.f, finalValue);
+
+                state = { d: daily, m: monthly, f: finalValue };
+            }
         }
         
         window.onload = calc;
