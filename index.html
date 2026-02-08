@@ -13,6 +13,7 @@
             --accent-brown: #3e3a36;
             --white: #ffffff;
             --input-bg: #e8e6e1;
+            --gold-muted: #d4af37;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,16 +24,14 @@
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            padding: 2rem;
         }
 
         .container {
             width: 100%;
             max-width: 1100px;
-            padding: 2rem;
             display: grid;
             grid-template-columns: repeat(12, 1fr);
             gap: 2rem;
@@ -41,7 +40,7 @@
         .header {
             grid-column: span 12;
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             animation: fadeIn 1s ease-out;
         }
 
@@ -54,9 +53,7 @@
             letter-spacing: -1px;
         }
 
-        h1 span {
-            font-style: italic;
-        }
+        h1 span { font-style: italic; }
 
         .subtitle {
             font-size: 1.1rem;
@@ -64,7 +61,6 @@
             opacity: 0.8;
             max-width: 600px;
             margin: 0 auto;
-            line-height: 1.5;
         }
 
         .card {
@@ -92,16 +88,17 @@
             font-family: 'Inter', sans-serif;
             color: var(--text-dark);
             outline: none;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
 
         input[type="number"]:focus {
             box-shadow: 0 0 0 2px var(--text-dark);
+            background: var(--white);
         }
 
-        .box-power {
+        .box-input {
             grid-column: span 4;
-            animation: slideUp 0.8s ease-out 0.1s backwards;
+            animation: slideUp 0.8s ease-out backwards;
         }
 
         .toggle-container {
@@ -125,66 +122,73 @@
             color: var(--bg-cream);
         }
 
-        .box-time {
-            grid-column: span 4;
-            animation: slideUp 0.8s ease-out 0.2s backwards;
-        }
-
-        .box-price {
-            grid-column: span 4;
-            animation: slideUp 0.8s ease-out 0.3s backwards;
-        }
-
-        .box-result {
+        .projections-wrapper {
             grid-column: 2 / span 10;
             background: var(--text-dark);
             color: var(--bg-cream);
             border-radius: 16px;
             padding: 3rem;
-            text-align: center;
             margin-top: 2rem;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             animation: slideUp 0.8s ease-out 0.4s backwards;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr 1px 1fr;
             align-items: center;
-            justify-content: space-between;
         }
 
-        .result-label {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            text-align: left;
+        .divider {
+            width: 1px;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
         }
 
-        .result-number {
+        .projection-item {
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        .proj-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            margin-bottom: 1rem;
+        }
+
+        .proj-value {
             font-family: 'Playfair Display', serif;
-            font-size: 5rem;
+            font-size: 3.5rem;
             font-style: italic;
+            line-height: 1;
+        }
+
+        .proj-sub {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            opacity: 0.5;
         }
 
         .currency {
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             vertical-align: super;
-            margin-right: 5px;
+            margin-right: 4px;
             font-style: normal;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 900px) {
             .container { grid-template-columns: 1fr; }
-            .box-power, .box-time, .box-price { grid-column: span 1; }
-            .box-result { grid-column: span 1; flex-direction: column; gap: 1rem; }
-            h1 { font-size: 3rem; }
-            .result-label { text-align: center; }
+            .box-input { grid-column: span 1; }
+            .projections-wrapper { 
+                grid-column: span 1; 
+                grid-template-columns: 1fr; 
+                gap: 2rem;
+            }
+            .divider { display: none; }
+            .proj-value { font-size: 3rem; }
         }
 
         input::-webkit-outer-spin-button,
@@ -195,11 +199,11 @@
 
     <div class="container">
         <div class="header">
-            <h1>Consumo de <span>Energía</span></h1>
+            <h1>Costo de <span>Energía</span></h1>
             <div class="subtitle">Calcula el costo de su consumo eléctrico.</div>
         </div>
 
-        <div class="card box-power">
+        <div class="card box-input" style="animation-delay: 0.1s">
             <div class="card-label">Potencia</div>
             <input type="number" id="powerInput" placeholder="0" oninput="calc()">
             <div class="toggle-container">
@@ -208,8 +212,8 @@
             </div>
         </div>
 
-        <div class="card box-time">
-            <div class="card-label">Tiempo (Horas)</div>
+        <div class="card box-input" style="animation-delay: 0.2s">
+            <div class="card-label">Uso Diario (Horas)</div>
             <input type="number" id="timeInput" placeholder="0" oninput="calc()">
             <div class="toggle-container">
                 <div class="pill-btn" onclick="quickTime(1)">1h</div>
@@ -218,55 +222,100 @@
             </div>
         </div>
 
-        <div class="card box-price">
+        <div class="card box-input" style="animation-delay: 0.3s">
             <div class="card-label">Precio (€/kWh)</div>
-            <input type="number" id="priceInput" value="0.15" placeholder="0.15" oninput="calc()">
+            <input
+    type="number"
+    id="priceInput"
+    value="0.15"
+    placeholder="0.15"
+    step="0.01"
+    min="0"
+    oninput="calc()"
+>
         </div>
 
-        <div class="card box-result">
-            <div class="result-label">Costo Estimado<br><span style="font-size: 1rem; font-family: 'Inter'; opacity: 0.7;">Basado en su tarifa actual</span></div>
-            <div class="result-number">
-                <span class="currency">€</span><span id="finalPrice">0.00</span>
+        <div class="projections-wrapper">
+            <div class="projection-item">
+                <div class="proj-label">Costo Diario</div>
+                <div class="proj-value"><span class="currency">€</span><span id="costDaily">0.00</span></div>
+                <div class="proj-sub">1 Día</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="projection-item">
+                <div class="proj-label">Mensual</div>
+                <div class="proj-value"><span class="currency">€</span><span id="costMonthly">0.00</span></div>
+                <div class="proj-sub">30 Días</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="projection-item">
+                <div class="proj-label">Anual</div>
+                <div class="proj-value"><span class="currency">€</span><span id="costYearly">0.00</span></div>
+                <div class="proj-sub">365 Días</div>
             </div>
         </div>
     </div>
 
     <script>
         let unit = 'W';
-        const pInput = document.getElementById('powerInput');
-        const tInput = document.getElementById('timeInput');
-        const cInput = document.getElementById('priceInput');
-        const display = document.getElementById('finalPrice');
-        const bW = document.getElementById('btnW');
-        const bKw = document.getElementById('btnKw');
+        let state = { d: 0, m: 0, y: 0 };
 
         function setUnit(u) {
             unit = u;
-            if(u === 'W') {
-                bW.classList.add('active');
-                bKw.classList.remove('active');
-            } else {
-                bKw.classList.add('active');
-                bW.classList.remove('active');
-            }
+            document.getElementById('btnW').classList.toggle('active', u === 'W');
+            document.getElementById('btnKw').classList.toggle('active', u === 'kW');
             calc();
         }
 
         function quickTime(h) {
-            tInput.value = h;
+            document.getElementById('timeInput').value = h;
             calc();
         }
 
-        function calc() {
-            let p = parseFloat(pInput.value) || 0;
-            let t = parseFloat(tInput.value) || 0;
-            let c = parseFloat(cInput.value) || 0;
+        function animate(id, start, end) {
+            const el = document.getElementById(id);
+            const duration = 600;
+            const startTime = performance.now();
 
-            let kw = unit === 'W' ? (p / 1000) : p;
-            let total = kw * t * c;
+            function update(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 4);
+                const current = start + (end - start) * ease;
+                
+                el.textContent = current.toLocaleString('es-ES', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                });
 
-            display.textContent = total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
         }
+
+        function calc() {
+            const p = parseFloat(document.getElementById('powerInput').value) || 0;
+            const t = parseFloat(document.getElementById('timeInput').value) || 0;
+            const c = parseFloat(document.getElementById('priceInput').value) || 0;
+
+            const kw = unit === 'W' ? (p / 1000) : p;
+            
+            const daily = kw * t * c;
+            const monthly = daily * 30;
+            const yearly = daily * 365;
+
+            animate('costDaily', state.d, daily);
+            animate('costMonthly', state.m, monthly);
+            animate('costYearly', state.y, yearly);
+
+            state = { d: daily, m: monthly, y: yearly };
+        }
+        
+        window.onload = calc;
     </script>
 </body>
 </html>
